@@ -28,8 +28,6 @@ RUN set -eux; \
         $PHPIZE_DEPS \
         ca-certificates \
         curl \
-        librecode0 \
-        libmysqlclient-dev \
         libsqlite3-0 \
         libxml2 \
         bzip2 \
@@ -37,7 +35,12 @@ RUN set -eux; \
         libbz2-1.0 \
         libxslt1.1 \
         apache2-bin \
-        apache2.2-common; \
+        apache2.2-common \
+        libfreetype6 \
+        libjpeg62-turbo \
+        libpng12-0 \
+        libvpx1 \
+        libwebp5; \
     apt-get clean; \
     rm -r /var/lib/apt/lists/*
 
@@ -119,12 +122,12 @@ RUN set -eux; \
 # Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
 # Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
 # https://github.com/docker-library/php/issues/272
-ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
+ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV PHP_VERSION 5.4.45
 
-COPY docker-php-source /usr/local/bin/
+COPY docker-php-* /usr/local/bin/
 
 RUN set -eux; \
     cd /usr/src; \
@@ -133,14 +136,19 @@ RUN set -eux; \
 ENV PHP_BUILD_DEPS \
     libcurl4-openssl-dev \
     libreadline6-dev \
-    librecode-dev \
     libsqlite3-dev \
     libssl-dev \
     libxml2-dev \
     libicu-dev \
     libbz2-dev \
     libxslt-dev \
-    apache2-dev
+    apache2-dev \
+    libmysqlclient-dev \
+    libfreetype6-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libvpx-dev \
+    libwebp-dev
 
 RUN set -eux; \
     apt-get update && apt-get install -y $PHP_BUILD_DEPS --no-install-recommends; \
@@ -148,9 +156,12 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*; \
     export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS"; \
     . "$APACHE_ENVVARS"; \
+    ln -s /usr/include/freetype2 /usr/include/freetype2/freetype; \
     docker-php-source extract; \
     cd /usr/src/php; \
+    gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
     ./configure \
+        --build="$gnuArch" \
         --with-config-file-path="$PHP_INI_DIR" \
         --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
         --enable-option-checking=fatal \
@@ -163,6 +174,7 @@ RUN set -eux; \
         --enable-dom \
         --enable-fileinfo \
         --enable-filter \
+        --enable-ftp \
         --with-mhash \
         --with-iconv \
         --enable-intl \
@@ -177,13 +189,18 @@ RUN set -eux; \
         --enable-pdo \
         --with-pdo-mysql=mysqlnd \
         --with-pdo-sqlite \
+        --with-sqlite3 \
+        --with-gd \
+        --with-jpeg-dir=/usr/lib/x86_64-linux-gnu \
+        --with-png-dir=/usr/lib/x86_64-linux-gnu \
+        --with-freetype-dir=/usr/lib/x86_64-linux-gnu \
+        --with-vpx-dir=/usr/lib/x86_64-linux-gnu \
+        --enable-exif \
         --enable-phar \
         --enable-posix \
-        --with-recode \
         --enable-simplexml \
         --enable-soap \
         --enable-sockets \
-        --with-sqlite3 \
         --enable-tokenizer \
         --enable-xml \
         --with-xsl \
@@ -199,9 +216,16 @@ RUN set -eux; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS; \
 # https://github.com/docker-library/php/issues/443
     pecl update-channels; \
-    rm -rf /tmp/pear ~/.pearrc
+    pecl install -Z ZendOpcache-7.0.5; \
+    docker-php-ext-enable opcache; \
+    rm -rf /tmp/pear ~/.pearrc; \
+# smoke test
+    php --version
 
-COPY docker-php-* /usr/local/bin/
+ENTRYPOINT ["docker-php-entrypoint"]
+
+# https://httpd.apache.org/docs/2.4/stopping.html#gracefulstop
+STOPSIGNAL SIGWINCH
 
 COPY apache2-foreground /usr/local/bin/
 WORKDIR /var/www/html
