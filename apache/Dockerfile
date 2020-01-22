@@ -137,7 +137,6 @@ ENV PHP_BUILD_DEPS \
     libcurl4-openssl-dev \
     libreadline6-dev \
     libsqlite3-dev \
-    libssl-dev \
     libxml2-dev \
     libicu-dev \
     libbz2-dev \
