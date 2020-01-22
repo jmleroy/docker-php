@@ -153,14 +153,14 @@ RUN set -eux; \
     make clean; \
     cp /usr/src/php/php.ini-production /usr/local/etc/php/php.ini; \
     docker-php-ext-enable opcache; \
-    docker-php-source delete; \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS; \
 # https://github.com/docker-library/php/issues/443
     pecl update-channels; \
     pecl install -f libsodium; \
     docker-php-ext-enable sodium; \
     pecl clear-cache; \
     rm -rf /tmp/pear ~/.pearrc; \
+    docker-php-source delete; \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS; \
 # smoke test
     php --version
 
