@@ -32,7 +32,6 @@ RUN set -eux; \
         libsqlite3-0 \
         libxml2 \
         libzip4 \
-        libedit2 \
         xz-utils \
         libicu57 \
         libbz2-1.0 \
@@ -86,7 +85,6 @@ ENV PHP_BUILD_DEPS \
     libicu-dev \
     libbz2-dev \
     libxslt-dev \
-    libedit-dev \
     libzip-dev \
     zlib1g-dev \
     default-libmysqlclient-dev \
@@ -122,7 +120,6 @@ RUN set -eux; \
         --enable-fileinfo \
         --enable-filter \
         --enable-ftp \
-        --with-libedit \
         --with-mhash \
         --with-iconv \
         --enable-intl \
