@@ -1,12 +1,12 @@
 # Custom build of PHP based on the official build for docker.
 
-See repository on [Docker Hub](https://hub.docker.com/r/yannickvh/php)
+See repository on [Docker Hub](https://hub.docker.com/repository/docker/yannickvh/php)
 
 # Supported tags and respective `Dockerfile` links
 
-- [ `5.5-apache` (*5.5/apache/Dockerfile*)](https://github.com/yvh/docker-php/blob/5.5/apache/Dockerfile)
-- [ `5.5-cli` (*5.5/cli/Dockerfile*)](https://github.com/yvh/docker-php/blob/5.5/cli/Dockerfile)
-- [ `5.5-fpm` (*5.5/fpm/Dockerfile*)](https://github.com/yvh/docker-php/blob/5.5/fpm/Dockerfile)
+- [ `5.5-apache` (*apache/Dockerfile*)](https://github.com/yvh/docker-php/blob/master/apache/Dockerfile)
+- [ `5.5-cli` (*cli/Dockerfile*)](https://github.com/yvh/docker-php/blob/master/cli/Dockerfile)
+- [ `5.5-fpm` (*fpm/Dockerfile*)](https://github.com/yvh/docker-php/blob/master/fpm/Dockerfile)
 
 # How to use this image
 
