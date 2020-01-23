@@ -75,6 +75,7 @@ RUN set -eux; \
     curl -SsL "https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" -o php.tar.xz
 
 ENV PHP_BUILD_DEPS \
+    dpkg-dev \
     libcurl4-openssl-dev \
     libreadline6-dev \
     libsqlite3-dev \
