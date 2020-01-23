@@ -78,6 +78,7 @@ RUN set -eux; \
 # php 5.3 needs older autoconf
 ENV PHP_BUILD_DEPS \
     autoconf2.13 \
+    dpkg-dev \
     libcurl4-openssl-dev \
     libreadline6-dev \
     libsqlite3-dev \
