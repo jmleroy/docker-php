@@ -162,11 +162,17 @@ RUN set -eux; \
     docker-php-ext-enable opcache; \
     docker-php-source delete; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS; \
-# https://github.com/docker-library/php/issues/443
-    pecl update-channels; \
-    rm -rf /tmp/pear ~/.pearrc; \
 # smoke test
     php --version
+
+# Update curl certificatesfor pear
+RUN set -eux; \
+    curl -L https://curl.haxx.se/ca/cacert.pem -o /usr/local/ssl/certs/cacert.pem; \
+    cd /usr/local/etc/php/conf.d; \
+    echo "openssl.cafile=/usr/local/ssl/certs/cacert.pem" >> docker-php-ext-openssl.ini; \
+# https://github.com/docker-library/php/issues/443
+    pecl update-channels; \
+    rm -rf /tmp/pear ~/.pearrc
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
