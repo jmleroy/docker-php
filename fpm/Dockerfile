@@ -174,6 +174,9 @@ RUN set -eux; \
     pecl update-channels; \
     rm -rf /tmp/pear ~/.pearrc
 
+ENV INSTALL_WP_CLI false
+ENV INSTALL_COMPOSER false
+
 ENTRYPOINT ["docker-php-entrypoint"]
 
 WORKDIR /var/www/html
