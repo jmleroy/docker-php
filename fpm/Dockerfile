@@ -163,9 +163,6 @@ RUN set -eux; \
 # smoke test
     php --version
 
-ENV INSTALL_WP_CLI false
-ENV INSTALL_COMPOSER false
-
 ENTRYPOINT ["docker-php-entrypoint"]
 
 WORKDIR /var/www/html
